@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-02
 **Scope:** Teaching/demonstrative
-**Language:** Dedekind (`.ddk`, run via `dedekind <file>`)
+**Language:** Dedekind (`.ddk`, run via `python -m dedekind.compiler <file>.ddk`)
 **Paper:** *High-precision lattice determination of the interaction potential of an SU(2)
 solitonic dipole and comparison with perturbative QED*, M. Faber & R. Golubich (TU Wien),
 arXiv:2604.12021. Model of Topological Fermions (MTF).

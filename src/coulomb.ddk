@@ -6,9 +6,9 @@
 //     E_out(R) = (alpha_sol * hbar c / 2) / R
 // hence  E_out(R) * R  is a plateau equal to alpha_sol*hbar c/2, and
 //     alpha_sol^-1 = hbar c / (2 * E_out(R) * R).
+// Operates on a precomputed density field + radius field, so it needs only the grid
+// constants (the caller builds the soliton density via field.ddk + energy.ddk).
 use constants
-use field
-use energy
 
 // Energy [MeV] outside radius R, summed over the interior (boundary shell dropped).
 fn e_out(dens, rfield, R) {

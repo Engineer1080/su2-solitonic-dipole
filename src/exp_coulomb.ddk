@@ -18,7 +18,7 @@ f = centered_soliton()
 dens = energy_density(f[0], f[1], f[2], f[3])
 rfield = center_radius()
 
-print("R [fm] | E_out*R [MeV*fm] (target 0.720) | alpha_sol^-1 (CODATA 137.036)")
+print("R [fm] | E_out*R [MeV*fm] (CODATA-exact 0.720; measured ~0.66) | alpha_sol^-1 (CODATA 137.036)")
 print(2.0)
 print(coulomb_coeff(dens, rfield, 2.0))
 print(alpha_inv_at(dens, rfield, 2.0))
