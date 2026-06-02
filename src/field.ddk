@@ -2,7 +2,8 @@
 use constants
 
 // Hedgehog soliton centered at lattice indices (cx,cy,cz); s = +1 soliton, -1 antisoliton.
-// Returns [q0,q1,q2,q3], each shape (NX,NY,NZ). q0=cos(alpha), q_vec=sin(alpha)*s*n_hat.
+// Returns [q0,q1,q2,q3], each shape (NX,NY,NZ). q0=cos(alpha), q_vec=sin(alpha)*s*n_hat,
+// with the single-soliton profile alpha(r) = atan(r/R0).
 fn hedgehog(cx, cy, cz, s) {
     xs = (arange(0.0, NXf, 1.0) - cx) * A
     ys = (arange(0.0, NYf, 1.0) - cy) * A
@@ -17,7 +18,7 @@ fn hedgehog(cx, cy, cz, s) {
     nx = x3 / r
     ny = y3 / r
     nz = z3 / r
-    q0 = ca + (nx * 0.0)            // broadcast q0 to full (NX,NY,NZ)
+    q0 = ca                        // already shape (NX,NY,NZ) via the r broadcast
     q1 = sa * s * nx
     q2 = sa * s * ny
     q3 = sa * s * nz
@@ -53,7 +54,7 @@ fn normalize_field(f) {
 
 // Soliton(+) at +d/2 and antisoliton(-) at -d/2 along z; product config, then normalized.
 fn dipole_init(d) {
-    off = (d / A) / 2.0
+    off = (d / A) / 2.0            // d [fm] -> half-offset in lattice units
     cx = (NXf - 1.0) / 2.0
     cy = (NYf - 1.0) / 2.0
     cz = (NZf - 1.0) / 2.0
