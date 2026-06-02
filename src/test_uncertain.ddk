@@ -1,0 +1,16 @@
+// Test propagation of uncertainties with units
+use constants
+
+fn main() {
+    print("--- Test Error Propagation ---")
+    // R0 with uncertainty
+    R0_err = uncertain(2.21320516, 0.001, "fm")
+    
+    // E0 calculation using propagated uncertainty
+    ALPHA_HBARC_err = uncertain(unwrap(ALPHA_HBARC), 0.0, "MeV*fm")
+    E0_err = (ALPHA_HBARC_err / R0_err) * (PI / 4.0)
+    
+    print("Analytical Soliton Energy E0 with uncertainty:")
+    print(E0_err)
+}
+main()
