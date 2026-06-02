@@ -12,10 +12,13 @@ ME_C2 = 0.510998950            // MeV  (electron rest energy)
 EPREF = ALPHA_HBARC / (4.0 * PI)
 
 // --- Lattice (3D Cartesian) ---
+// Odd sizes => the soliton core sits exactly on a lattice point (r=0 => q0=1).
+// NZ is longer so the dipole scan (d up to ~8 fm) keeps both cores well clear
+// of the z-boundary.
 A   = 0.7377                   // spacing in fm (~ R0/3)
-NX  = 24
-NY  = 24
-NZ  = 24
+NX  = 25
+NY  = 25
+NZ  = 49
 NXf = NX + 0.0
 NYf = NY + 0.0
 NZf = NZ + 0.0
