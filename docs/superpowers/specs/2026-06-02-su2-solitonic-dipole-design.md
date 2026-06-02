@@ -148,3 +148,42 @@ classical unit tests. Each `tests/test_*.ddk` runs a small configuration and ass
 - **Runtime:** even 2D relaxation can be slow; keep grids modest, allow coarse `a` for smoke
   runs and a finer setting for the reported result.
 - **Convergence:** norm reprojection + line search needed for stable relaxation; M1 validates.
+
+## 9. Outcome & revised scope (post-implementation)
+
+The sections above record the *intended* design. Implementation surfaced a genuine
+physics obstacle that changed the deliverable; this section is the source of truth for
+what was actually built.
+
+**What worked (verified):**
+- Units/constants and the closed-form anchor `E0 = (alpha_f hbar c / r0)(pi/4) = 0.511 MeV`.
+- The quaternion field and the energy functional from finite differences of `Q`. The
+  single-soliton lattice energy is `E_grid ~ 0.43-0.46 MeV` (grid dependent), confirmed
+  by an independent cylindrically-symmetric derivation (`E0_cyl ~ 0.43`). Two methods,
+  same answer => the energy machinery and its normalization are correct.
+
+**The obstacle (dynamical dipole):**
+- Free 3D relaxation of all four components drives the field to the true vacuum
+  (`q0=0`, uniform `n_hat`, `E -> 0`): the lattice does not protect the soliton's
+  topological charge.
+- Constraining to the axially-symmetric `(Theta, alpha)` ansatz with a fixed boundary
+  still **deflates** (`E: 0.43 -> 0.045`): the Skyrme/Derrick instability shrinks the
+  core sub-cell. A stable, in-sector minimization needs the paper's exact boundary
+  conditions, `15 r0` domain, and discretization — research-grade, beyond teaching scope.
+- The un-relaxed superposed dipole gives a large positive overlap artifact (`~+40 MeV`),
+  not Coulomb.
+
+**Delivered approach (semi-analytic Coulomb / alpha):**
+- `alpha_sol` is extracted from the **single soliton's near-field Coulomb tail**:
+  `E_out(R) = (alpha_sol hbar c / 2)/R`, so `E_out(R)*R` plateaus at `alpha_sol hbar c/2`.
+  Measured on a `65^3`, `a=0.5 fm` grid it is flat at `~0.66 MeV*fm` over `R = 2..4 fm`,
+  giving `alpha_sol^-1 ~ 151` (CODATA 137.036, recovered to ~10%). `V(d) = -alpha_sol hbar c/d`
+  then follows for two opposite charges.
+- **Not** reproduced: the precise `137.1(1)`, `delta E_inf`, and the running of `alpha`
+  (all require the full dynamical dipole at large separation).
+
+**Module map of the final code:** `constants.ddk`, `field.ddk` (hedgehog,
+`centered_soliton`, `center_radius`), `energy.ddk` (`energy_density`,
+`energy_components`), `coulomb.ddk` (`e_out`, `coulomb_coeff`, `alpha_inv_at`),
+`exp_soliton1d.ddk`, `exp_coulomb.ddk`, and `test_*.ddk`. The 3D relaxation /
+2D-cylindrical dipole modules described in sections 3-6 were attempted and removed.

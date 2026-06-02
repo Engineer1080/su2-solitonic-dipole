@@ -8,6 +8,15 @@
 
 **Tech Stack:** Dedekind 3.0.x (`.ddk`), torch-backed tensors + autograd, `Quaternion`/`minimize`/`polyfit` builtins. Run on Windows via `$env:PYTHONUTF8='1'; python -m dedekind.compiler <file>.ddk`.
 
+> **STATUS — partially superseded.** Tasks 0-3 were implemented as written (constants,
+> closed-form `E0`, quaternion field, energy from FD of `Q`). Tasks 4-6 (L-BFGS relaxation,
+> dipole `E(d)`, distance scan) were attempted but the dynamical dipole hit the
+> Skyrme/Derrick lattice instability (the soliton unwinds / collapses); a faithful stable
+> minimization is research-grade. The project pivoted to a **semi-analytic Coulomb/alpha**
+> demonstration (`coulomb.ddk`, `exp_coulomb.ddk`, `test_coulomb.ddk`): `alpha_sol^-1 ~ 151`
+> from the single soliton's near-field tail. See the design spec's **Outcome** section
+> (`...-design.md`, section 9) for the authoritative final description.
+
 ---
 
 ## Conventions (read once)
