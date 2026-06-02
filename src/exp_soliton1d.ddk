@@ -1,0 +1,19 @@
+use constants
+
+// Closed-form rest energy of one hedgehog soliton (paper, single-soliton result):
+//   E0 = (alpha_f * hbar c / r0) * (pi/4)
+fn soliton_rest_energy() {
+    return (ALPHA_HBARC / R0) * (PI / 4.0)
+}
+
+e0 = soliton_rest_energy()
+print("E0 (closed form) [MeV] =")
+print(e0)
+print("electron m_e c^2 [MeV] =")
+print(ME_C2)
+rel = (e0 - ME_C2) / ME_C2
+print("relative error =")
+print(rel)
+assert(rel < 0.01)
+assert(rel > -0.01)
+print("OK exp_soliton1d")
