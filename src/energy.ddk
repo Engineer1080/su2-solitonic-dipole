@@ -34,7 +34,9 @@ fn energy_components(q0, q1, q2, q3) {
     gy = gamma_dir(q0, q1, q2, q3, 1)
     gz = gamma_dir(q0, q1, q2, q3, 2)
     curv = 0.5 * (cross_sq(gx, gy) + cross_sq(gx, gz) + cross_sq(gy, gz))
-    lam = (q0 * q0 * q0 * q0 * q0 * q0) / (R0 * R0 * R0 * R0)
+    // Stabilizing potential Lambda = cos^6(alpha)/R0^4 = q0^6/R0^4 (MTF Lagrangian).
+    q0sq = q0 * q0
+    lam = (q0sq * q0sq * q0sq) / (R0 * R0 * R0 * R0)
     dens = EPREF * (curv + lam)
     // Drop the 1-cell boundary shell (roll wraps periodically -> bad edge derivatives).
     di = dens.narrow(0, 1, NX - 2).narrow(1, 1, NY - 2).narrow(2, 1, NZ - 2)
