@@ -36,19 +36,36 @@ interpreted DSL. We aim for *qualitative* reproduction with strong analytic veri
   energy; `V(d) = E(d) − 2·E₀`. Coulomb fit at large `d` extracts `A = α_sol ħc` and offset
   `δE_∞`, hence `α_sol⁻¹`.
 
-## 3. Method (Approach A: cylindrically symmetric 2D lattice)
+## 3. Method (Approach A, refined: small 3D Cartesian lattice)
 
-The dipole is axially symmetric, so the field is discretized on a 2D `(ϱ, z)` grid instead of
-full 3D — same reduction the paper uses. Energy density integrated with the cylindrical measure
-`2π ϱ dϱ dz`. Spatial derivatives via vectorized finite differences (tensor shifts): 2nd-order
-to start, optional 4th-order five-point stencils (as in the paper) as a refinement. Relaxation
-by gradient descent / nonlinear conjugate gradient with unit-norm reprojection each step.
-An analytic Coulomb tail `H_out` accounts for field energy beyond the truncated boundary.
+The field is discretized on a small **3D Cartesian** grid `(Nx, Ny, Nz)` with the unit
+quaternion stored as four component tensors. The curvature is computed **directly from finite
+differences of the field** rather than from the analytic cylindrical reduction:
+`(∂_i Q)Q† = -i σ⃗·Γ⃗_i` → `Γ⃗_i` = vector part of the quaternion product `(∂_i Q)·conj(Q)`;
+then `R⃗_{ij} = Γ⃗_i × Γ⃗_j`. Energy density
+`e = (α_f ħc/4π)·( ½(|R_xy|² + |R_xz|² + |R_yz|²) + Λ )`, `Λ = q₀⁶/r₀⁴`, integrated as
+`E = a³ · Σ_sites e`. Spatial derivatives via vectorized tensor shifts (`Q.roll(±1, dim)`).
+Relaxation by `minimize(method="lbfgs")` over the flattened field in an outer loop, with
+unit-norm reprojection between calls.
+
+**Why 3D instead of the paper's 2D cylindrical reduction:** computing `Γ` directly from finite
+differences of `Q` is mechanical and robustly correct in 3D, whereas the 2D `(ϱ,z)` reduction
+needs the azimuthal-derivative term derived and validated (error-prone). A spike confirmed the
+energy is fully vectorized in torch (no per-site Python loops), so a modest 3D grid relaxes via
+autograd + L-BFGS in seconds–minutes. The original tractability argument against 3D no longer
+applies. A cylindrical 2D variant remains a possible later optimization if runtime becomes a
+problem.
+
+**Overall normalization:** the energy prefactor (and any convention sign/factor in the
+`Γ`/`R` definitions) is pinned by the M1 gate — requiring the single soliton to give
+`E₀ = 0.511 MeV`. Any leftover constant factor is absorbed/documented there.
 
 ### Deliberate simplifications vs. paper
-- Domain smaller than the paper's 15·r₀ (boundary at ~6–8 r₀) for tractable runtime.
-- Start with 2nd-order stencils; 4th-order optional.
+- Small 3D grid; domain smaller than the paper's 15·r₀ (boundary at ~6 r₀) for tractable runtime.
+- 2nd-order central differences (`roll`-based); the paper's 4th-order stencils are optional.
 - `a ≈ r₀/3` lattice spacing (matches paper's `a ≤ r₀/3` constraint).
+- Truncation tail beyond the box accepted as a few-% error (energy density ~1/r⁴ ⇒ tail ∝ 1/R);
+  an analytic Coulomb correction `H_out` is optional.
 All documented in README.
 
 ## 3.1 Dedekind features used
@@ -90,12 +107,12 @@ Verified against the installed runtime (`dedekind` 3.0.x). Pillars first, then s
 su2-solitonic-dipole/
   README.md
   src/
-    constants.ddk      α_f, ħc, r0, m_e, lattice params
-    field.ddk          quaternion field on (ϱ,z) grid, hedgehog init, norm constraint
-    energy.ddk         Γ_μ, R_μν, H_curv + H_pot(Λ) + H_out, stencils, cylindrical measure
-    relax.ddk          gradient/CG relaxation with norm reprojection
+    constants.ddk      α_f, ħc, r0, m_e, lattice params (Nx,Ny,Nz, a)
+    field.ddk          quaternion field on 3D grid, hedgehog init, norm reprojection
+    energy.ddk         Γ_i from FD of Q, R_ij, curvature + potential(Λ), a³ integration
+    relax.ddk          minimize(lbfgs) over flattened field, outer loop + reprojection
   experiments/
-    soliton1d.ddk      single soliton radial → E0
+    soliton1d.ddk      single soliton radial integral → E0 (analytic anchor)
     dipole.ddk         two solitons at distance d → E(d)
     scan_potential.ddk loop over d, V(d)=E(d)-2E0, Coulomb fit, α_sol⁻¹
   tests/
@@ -109,9 +126,12 @@ su2-solitonic-dipole/
 
 ## 6. Milestones & verification
 
-- **M0 — Spike:** confirm which tensor primitives Dedekind exposes in `.ddk` (2D tensors,
-  slicing/shift, complex, autograd through loops). If autograd through `.ddk` loops does not
-  hold, fall back to hand-coded gradients / CG. De-risk before building the rest.
+- **M0 — Spike (DONE):** confirmed `.ddk` primitives — list literals become tensors; torch
+  methods pass through via member access (`.sum()`, `.reshape()`, `.roll(s,dim)`, `.narrow()`,
+  slicing `[a:b]`); broadcasting; `minimize(f, x0, "lbfgs")` with a closure (autograd works
+  end-to-end, returns `.x`/`.fun`); `Quaternion` algebra; `assert(...)`. Run via
+  `$env:PYTHONUTF8='1'; python -m dedekind.compiler <file>.ddk` (no `[i,j]` multi-index —
+  use `roll`/`narrow`/reshape instead). Risk retired.
 - **M1:** single soliton → `E₀ ≈ 0.511 MeV` (few-% tolerance). Strongest analytic anchor.
 - **M2:** dipole `E(d)` monotonic; large-`d` behaves like `A/d`.
 - **M3:** Coulomb fit → `α_sol⁻¹ ≈ 137` (qualitative); `δE_∞` of order keV.
