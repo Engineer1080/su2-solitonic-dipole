@@ -1,0 +1,29 @@
+// modules/coulomb.ddk — extract the soliton's effective charge (alpha_sol) from
+// its near-field Coulomb tail.
+//
+// In the MTF the soliton is an electric charge: at large r its field is Coulomb,
+// so the energy stored OUTSIDE radius R is
+//     E_out(R) = (alpha_sol * hbar c / 2) / R
+// hence  E_out(R) * R  is a plateau equal to alpha_sol*hbar c/2, and
+//     alpha_sol^-1 = hbar c / (2 * E_out(R) * R).
+use constants
+use field
+use energy
+
+// Energy [MeV] outside radius R, summed over the interior (boundary shell dropped).
+fn e_out(dens, rfield, R) {
+    di = dens.narrow(0, 1, NX - 2).narrow(1, 1, NY - 2).narrow(2, 1, NZ - 2)
+    ri = rfield.narrow(0, 1, NX - 2).narrow(1, 1, NY - 2).narrow(2, 1, NZ - 2)
+    mask = (ri > R) * 1.0
+    return (A * A * A) * (di * mask).sum()
+}
+
+// E_out(R)*R [MeV*fm]; equals alpha_sol*hbar c/2 on the Coulomb plateau.
+fn coulomb_coeff(dens, rfield, R) {
+    return e_out(dens, rfield, R) * R
+}
+
+// Inverse effective fine-structure constant from the tail at radius R.
+fn alpha_inv_at(dens, rfield, R) {
+    return HBARC / (2.0 * e_out(dens, rfield, R) * R)
+}

@@ -1,0 +1,29 @@
+use coulomb
+use field
+use energy
+use constants
+
+// The single soliton's near-field must look like a Coulomb charge with
+// alpha_sol^-1 of order 137, and E_out(R)*R must be roughly flat across the
+// near-field window (the signature of a 1/R Coulomb tail).
+f = centered_soliton()
+dens = energy_density(f[0], f[1], f[2], f[3])
+rfield = center_radius()
+
+c25 = coulomb_coeff(dens, rfield, 2.5)
+c35 = coulomb_coeff(dens, rfield, 3.5)
+ainv = alpha_inv_at(dens, rfield, 3.0)
+print("E_out*R at R=2.5 and 3.5:")
+print(c25)
+print(c35)
+print("alpha_sol^-1 at R=3.0:")
+print(ainv)
+
+// Order-of-magnitude recovery of the fine-structure constant.
+assert(ainv > 110.0)
+assert(ainv < 190.0)
+// Plateau: the coefficient varies by < 15% across R=2.5..3.5.
+ratio = c25 / c35
+assert(ratio > 0.85)
+assert(ratio < 1.15)
+print("OK test_coulomb")
