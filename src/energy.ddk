@@ -28,8 +28,8 @@ fn cross_sq(a, b) {
     return Rx * Rx + Ry * Ry + Rz * Rz
 }
 
-// Total static energy [MeV] of the field given by 4 components (NX,NY,NZ).
-fn energy_components(q0, q1, q2, q3) {
+// Energy density field [MeV/fm^3] per cell, shape (NX,NY,NZ).
+fn energy_density(q0, q1, q2, q3) {
     gx = gamma_dir(q0, q1, q2, q3, 0)
     gy = gamma_dir(q0, q1, q2, q3, 1)
     gz = gamma_dir(q0, q1, q2, q3, 2)
@@ -37,7 +37,12 @@ fn energy_components(q0, q1, q2, q3) {
     // Stabilizing potential Lambda = cos^6(alpha)/R0^4 = q0^6/R0^4 (MTF Lagrangian).
     q0sq = q0 * q0
     lam = (q0sq * q0sq * q0sq) / (R0 * R0 * R0 * R0)
-    dens = EPREF * (curv + lam)
+    return EPREF * (curv + lam)
+}
+
+// Total static energy [MeV] of the field given by 4 components (NX,NY,NZ).
+fn energy_components(q0, q1, q2, q3) {
+    dens = energy_density(q0, q1, q2, q3)
     // Drop the 1-cell boundary shell (roll wraps periodically -> bad edge derivatives).
     di = dens.narrow(0, 1, NX - 2).narrow(1, 1, NY - 2).narrow(2, 1, NZ - 2)
     return (A * A * A) * di.sum()

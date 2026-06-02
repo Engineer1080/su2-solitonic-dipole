@@ -12,15 +12,14 @@ ME_C2 = 0.510998950            // MeV  (electron rest energy)
 EPREF = ALPHA_HBARC / (4.0 * PI)
 
 // --- Lattice (3D Cartesian) ---
-// Odd sizes => the soliton core sits exactly on a lattice point (r=0 => q0=1).
-// NZ is longer so the dipole scan (d up to ~8 fm) keeps both cores well clear
-// of the z-boundary.
-A   = 0.7377                   // spacing in fm (~ R0/3)
-NX  = 25
-NY  = 25
-NZ  = 49
+// Odd cubic grid: the soliton core sits exactly on a lattice point (r=0 => q0=1),
+// and the box is large enough (half-extent ~16 fm ~ 7 r0) to resolve the soliton's
+// near-field Coulomb tail out to R ~ 4-5 fm for the alpha estimate. No optimization
+// is performed (static energy-density evaluation only), so a large grid is cheap.
+A   = 0.5                      // spacing in fm (~ R0/4.4)
+NX  = 65
+NY  = 65
+NZ  = 65
 NXf = NX + 0.0
 NYf = NY + 0.0
 NZf = NZ + 0.0
-NPTS  = NX * NY * NZ
-NPTS4 = 4 * NPTS
