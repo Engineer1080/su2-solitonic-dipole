@@ -1,0 +1,42 @@
+// modules/energy.ddk — MTF energy from finite differences of the quaternion field.
+use constants
+
+// Central difference of a (NX,NY,NZ) field along spatial dim (0=x,1=y,2=z).
+fn dd(q, dim) {
+    return (q.roll(-1, dim) - q.roll(1, dim)) * (1.0 / (2.0 * A))
+}
+
+// Gamma vector (3 color comps) for spatial direction `dim`:
+//   (d_dim Q) conj(Q) = -i sigma . Gamma  ->  Gamma = vector part.
+// Returns [Gx,Gy,Gz], each (NX,NY,NZ).
+fn gamma_dir(q0, q1, q2, q3, dim) {
+    d0 = dd(q0, dim)
+    d1 = dd(q1, dim)
+    d2 = dd(q2, dim)
+    d3 = dd(q3, dim)
+    Gx = q0 * d1 - d0 * q1 + (d3 * q2 - d2 * q3)
+    Gy = q0 * d2 - d0 * q2 + (d1 * q3 - d3 * q1)
+    Gz = q0 * d3 - d0 * q3 + (d2 * q1 - d1 * q2)
+    return [Gx, Gy, Gz]
+}
+
+// |A x B|^2 in color space; A,B are [Ax,Ay,Az].
+fn cross_sq(a, b) {
+    Rx = a[1] * b[2] - a[2] * b[1]
+    Ry = a[2] * b[0] - a[0] * b[2]
+    Rz = a[0] * b[1] - a[1] * b[0]
+    return Rx * Rx + Ry * Ry + Rz * Rz
+}
+
+// Total static energy [MeV] of the field given by 4 components (NX,NY,NZ).
+fn energy_components(q0, q1, q2, q3) {
+    gx = gamma_dir(q0, q1, q2, q3, 0)
+    gy = gamma_dir(q0, q1, q2, q3, 1)
+    gz = gamma_dir(q0, q1, q2, q3, 2)
+    curv = 0.5 * (cross_sq(gx, gy) + cross_sq(gx, gz) + cross_sq(gy, gz))
+    lam = (q0 * q0 * q0 * q0 * q0 * q0) / (R0 * R0 * R0 * R0)
+    dens = EPREF * (curv + lam)
+    // Drop the 1-cell boundary shell (roll wraps periodically -> bad edge derivatives).
+    di = dens.narrow(0, 1, NX - 2).narrow(1, 1, NY - 2).narrow(2, 1, NZ - 2)
+    return (A * A * A) * di.sum()
+}

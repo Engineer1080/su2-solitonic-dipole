@@ -1,0 +1,14 @@
+use energy
+use field
+use constants
+
+// Single centered soliton: grid energy must be a finite, positive number of the
+// right order of magnitude (electron rest energy ~0.511 MeV). Coarse grid =>
+// few-tens-% discretization/truncation error is expected (teaching scope).
+f = hedgehog((NXf - 1.0) / 2.0, (NYf - 1.0) / 2.0, (NZf - 1.0) / 2.0, 1.0)
+e = energy_components(f[0], f[1], f[2], f[3])
+print("E_grid(1 soliton) [MeV] =")
+print(e)
+assert(e > 0.15)
+assert(e < 1.5)
+print("OK test_energy")
