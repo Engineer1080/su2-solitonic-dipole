@@ -5,14 +5,16 @@ use constants
 // Returns [q0,q1,q2,q3], each shape (NX,NY,NZ). q0=cos(alpha), q_vec=sin(alpha)*s*n_hat,
 // with the single-soliton profile alpha(r) = atan(r/R0).
 fn hedgehog(cx, cy, cz, s) {
-    xs = (arange(0.0, NXf, 1.0) - cx) * A
-    ys = (arange(0.0, NYf, 1.0) - cy) * A
-    zs = (arange(0.0, NZf, 1.0) - cz) * A
+    A_val = unwrap(A)
+    R0_val = unwrap(R0)
+    xs = (arange(0.0, NXf, 1.0) - cx) * A_val
+    ys = (arange(0.0, NYf, 1.0) - cy) * A_val
+    zs = (arange(0.0, NZf, 1.0) - cz) * A_val
     x3 = xs.reshape(NX, 1, 1)
     y3 = ys.reshape(1, NY, 1)
     z3 = zs.reshape(1, 1, NZ)
     r  = sqrt(x3 * x3 + y3 * y3 + z3 * z3 + 1.0e-12)
-    alpha = atan(r / R0)
+    alpha = atan(r / R0_val)
     ca = cos(alpha)
     sa = sin(alpha)
     nx = x3 / r
@@ -32,11 +34,15 @@ fn centered_soliton() {
 
 // Radial distance [fm] from the grid center, shape (NX,NY,NZ).
 fn center_radius() {
+    A_val = unwrap(A)
     cx = (NXf - 1.0) / 2.0
     cy = (NYf - 1.0) / 2.0
     cz = (NZf - 1.0) / 2.0
-    xs = ((arange(0.0, NXf, 1.0) - cx) * A).reshape(NX, 1, 1)
-    ys = ((arange(0.0, NYf, 1.0) - cy) * A).reshape(1, NY, 1)
-    zs = ((arange(0.0, NZf, 1.0) - cz) * A).reshape(1, 1, NZ)
+    xs = ((arange(0.0, NXf, 1.0) - cx) * A_val).reshape(NX, 1, 1)
+    ys = ((arange(0.0, NYf, 1.0) - cy) * A_val).reshape(1, NY, 1)
+    zs = ((arange(0.0, NZf, 1.0) - cz) * A_val).reshape(1, 1, NZ)
     return sqrt(xs * xs + ys * ys + zs * zs + 1.0e-12)
 }
+
+
+

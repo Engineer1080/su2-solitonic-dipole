@@ -3,7 +3,7 @@ use constants
 
 // Central difference of a (NX,NY,NZ) field along spatial dim (0=x,1=y,2=z).
 fn dd(q, dim) {
-    return (q.roll(-1, dim) - q.roll(1, dim)) * (1.0 / (2.0 * A))
+    return (q.roll(-1, dim) - q.roll(1, dim)) * (1.0 / (2.0 * unwrap(A)))
 }
 
 // Gamma vector (3 color comps) for spatial direction `dim`:
@@ -36,8 +36,9 @@ fn energy_density(q0, q1, q2, q3) {
     curv = 0.5 * (cross_sq(gx, gy) + cross_sq(gx, gz) + cross_sq(gy, gz))
     // Stabilizing potential Lambda = cos^6(alpha)/R0^4 = q0^6/R0^4 (MTF Lagrangian).
     q0sq = q0 * q0
-    lam = (q0sq * q0sq * q0sq) / (R0 * R0 * R0 * R0)
-    return EPREF * (curv + lam)
+    R0_4 = unwrap(R0 * R0 * R0 * R0)
+    lam = (q0sq * q0sq * q0sq) / R0_4
+    return unwrap(EPREF) * (curv + lam)
 }
 
 // Total static energy [MeV] of the field given by 4 components (NX,NY,NZ).
@@ -45,5 +46,7 @@ fn energy_components(q0, q1, q2, q3) {
     dens = energy_density(q0, q1, q2, q3)
     // Drop the 1-cell boundary shell (roll wraps periodically -> bad edge derivatives).
     di = dens.narrow(0, 1, NX - 2).narrow(1, 1, NY - 2).narrow(2, 1, NZ - 2)
-    return (A * A * A) * di.sum()
+    A_val = unwrap(A)
+    return Quantity((A_val * A_val * A_val) * di.sum(), "MeV")
 }
+

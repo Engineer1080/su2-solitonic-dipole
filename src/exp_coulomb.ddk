@@ -1,14 +1,5 @@
 // experiments/exp_coulomb.ddk — recover the fine-structure constant from the
-// single soliton's near-field Coulomb tail.
-//
-// Method: build one centered soliton, evaluate its energy-density field, and measure
-// E_out(R) (energy outside radius R). On the Coulomb plateau E_out(R)*R is constant
-// and equals alpha_sol*hbar c/2, giving alpha_sol^-1 = hbar c / (2 E_out(R) R).
-// The interaction of two such opposite charges then follows: V(d) = -alpha_sol hbar c / d.
-//
-// Scope note: this recovers alpha to ~10% (order of magnitude of CODATA 137.036).
-// The precise value and the running of alpha require the paper's full dipole
-// minimization at large separation, which is beyond this teaching reproduction.
+// single soliton's near-field Coulomb tail using differentiable curve-fitting.
 use constants
 use field
 use energy
@@ -19,28 +10,44 @@ dens = energy_density(f[0], f[1], f[2], f[3])
 rfield = center_radius()
 
 print("R [fm] | E_out*R [MeV*fm] (CODATA-exact 0.720; measured ~0.66) | alpha_sol^-1 (CODATA 137.036)")
-print(2.0)
-print(coulomb_coeff(dens, rfield, 2.0))
-print(alpha_inv_at(dens, rfield, 2.0))
-print(2.5)
-print(coulomb_coeff(dens, rfield, 2.5))
-print(alpha_inv_at(dens, rfield, 2.5))
-print(3.0)
-print(coulomb_coeff(dens, rfield, 3.0))
-print(alpha_inv_at(dens, rfield, 3.0))
-print(3.5)
-print(coulomb_coeff(dens, rfield, 3.5))
-print(alpha_inv_at(dens, rfield, 3.5))
-print(4.0)
-print(coulomb_coeff(dens, rfield, 4.0))
-print(alpha_inv_at(dens, rfield, 4.0))
+print("2.0 fm:")
+print(coulomb_coeff(dens, rfield, 2.0[fm]))
+print(alpha_inv_at(dens, rfield, 2.0[fm]))
+print("3.0 fm:")
+print(coulomb_coeff(dens, rfield, 3.0[fm]))
+print(alpha_inv_at(dens, rfield, 3.0[fm]))
+print("4.0 fm:")
+print(coulomb_coeff(dens, rfield, 4.0[fm]))
+print(alpha_inv_at(dens, rfield, 4.0[fm]))
 
-// Plateau average over the near-field window R = 2.0 .. 4.0 fm.
-a1 = alpha_inv_at(dens, rfield, 2.0)
-a2 = alpha_inv_at(dens, rfield, 2.5)
-a3 = alpha_inv_at(dens, rfield, 3.0)
-a4 = alpha_inv_at(dens, rfield, 3.5)
-a5 = alpha_inv_at(dens, rfield, 4.0)
-amean = (a1 + a2 + a3 + a4 + a5) / 5.0
-print("near-field mean alpha_sol^-1:")
-print(amean)
+// Showcase Dedekind's differentiable curve-fitting (autograd optimizer)
+print("--- Fitting the Coulomb tail to E_out(R) = C/R ---")
+Rs = [2.0, 2.5, 3.0, 3.5, 4.0]
+Es = [
+    unwrap(e_out(dens, rfield, 2.0[fm])),
+    unwrap(e_out(dens, rfield, 2.5[fm])),
+    unwrap(e_out(dens, rfield, 3.0[fm])),
+    unwrap(e_out(dens, rfield, 3.5[fm])),
+    unwrap(e_out(dens, rfield, 4.0[fm]))
+]
+
+fn fit_loss(params, data) {
+    C = params[0]
+    Rs = data[0]
+    Es = data[1]
+    diff = C / Rs - Es
+    return (diff * diff).sum()
+}
+
+data = [Rs, Es]
+params_init = [0.5]
+params_opt = fit(fit_loss, params_init, data, method="gd", lr=0.1, steps=200)
+
+C_opt = params_opt[0]
+alpha_inv = unwrap(HBARC) / (2.0 * C_opt)
+
+print("Optimized C (alpha_sol*hbar c/2) [MeV*fm] =")
+print(C_opt)
+print("Fitted alpha_sol^-1 =")
+print(alpha_inv)
+

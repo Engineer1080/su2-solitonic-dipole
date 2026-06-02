@@ -2,11 +2,11 @@
 // Natural units: lengths in fm, energies in MeV.
 
 PI    = 3.141592653589793
-HBARC = 197.3269804            // MeV*fm
+HBARC = 197.3269804[MeV*fm]
 ALPHA_F = 1.0 / 137.035999084  // fine-structure constant (dimensionless)
 ALPHA_HBARC = ALPHA_F * HBARC  // MeV*fm  (~1.43996)
-R0    = 2.21320516             // fm  => E0 = (ALPHA_HBARC/R0)*(pi/4) = 0.511 MeV
-ME_C2 = 0.510998950            // MeV  (electron rest energy)
+R0    = 2.21320516[fm]
+ME_C2 = 0.510998950[MeV]       // electron rest energy
 
 // Energy prefactor alpha_f * hbar c / (4 pi)  [MeV*fm]
 EPREF = ALPHA_HBARC / (4.0 * PI)
@@ -16,10 +16,11 @@ EPREF = ALPHA_HBARC / (4.0 * PI)
 // and the box is large enough (half-extent ~16 fm ~ 7 r0) to resolve the soliton's
 // near-field Coulomb tail out to R ~ 4-5 fm for the alpha estimate. No optimization
 // is performed (static energy-density evaluation only), so a large grid is cheap.
-A   = 0.5                      // spacing in fm (~ R0/4.4)
+A   = 0.5[fm]                  // spacing in fm (~ R0/4.4)
 NX  = 65
 NY  = 65
 NZ  = 65
 NXf = NX + 0.0
 NYf = NY + 0.0
 NZf = NZ + 0.0
+
