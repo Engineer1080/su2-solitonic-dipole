@@ -51,6 +51,39 @@ An analytic Coulomb tail `H_out` accounts for field energy beyond the truncated 
 - `a ≈ r₀/3` lattice spacing (matches paper's `a ≤ r₀/3` constraint).
 All documented in README.
 
+## 3.1 Dedekind features used
+
+Verified against the installed runtime (`dedekind` 3.0.x). Pillars first, then secondary.
+
+**Load-bearing:**
+- **`Quaternion`** (`01_classes.py`): `w,x,y,z`, Hamilton product, `conjugate()`, `norm()`,
+  `normalize()`. This *is* the SU(2) field `q = (cos α, sin α·n⃗)`; `normalize()` is the
+  per-step unit-norm reprojection; Hamilton product builds `(∂_μ Q)Q†` for `Γ⃗_μ`.
+- **Vectorized tensor finite differences + autograd**: energy assembled as a torch
+  expression (stencils via tensor shifts/`roll`); gradient comes automatically — no
+  hand-coded gradient. This retires the main M0 risk.
+- **`minimize(f, x0, method="lbfgs")`** (`04_math.py`): the relaxer (paper uses nonlinear
+  CG; L-BFGS is the practical analog). Caveats: flattens `x0` to a 1D vector → field passed
+  as a flat parameter vector, reshaped to the `(ϱ,z)` grid internally; L-BFGS runs ≤20 steps
+  per call → wrap in an outer loop with norm reprojection between calls.
+
+**Analytic anchors:**
+- **`integrate` / `simpson` / `trapz`** (differentiable): radial `E₀` integral (M1).
+- **`expm`/`logm` + Pauli matrices** `PAULI_I/X/Y/Z`: build/verify `Q = exp(-i α σ⃗·n⃗)`
+  against the quaternion form.
+- **`Quantity` + constants** (`alpha`, `hbar`, `c`, `m_e`): document/verify `E₀ = 0.511 MeV`.
+  Caveat: unit tables don't carry a full MeV·fm chain → core math in natural numbers
+  (MeV, fm); `Quantity` mainly for documentation/verification.
+
+**Secondary / optional:**
+- **`cg(A,b)`** (`08_advanced.py`): linear solver, only if a Poisson step is used for the
+  analytic exterior `H_out`. Nonlinear field relaxation uses `minimize`, not `cg`.
+- **PDE helpers** (`03_solvers.py`: `_laplacian`, `_roll`, `_gradient`, `sparse_laplacian_2d`):
+  reference for the cylindrical stencils.
+- **Complex tensors + FFT** (`02_tensors.py`): optional FFT-based exterior Coulomb solve.
+- **LaTeX-from-AST (`--latex`)** and **reproducibility report (`--reproducibility-report`)**:
+  emit the energy functional as LaTeX and a repro report — "paper" finish.
+
 ## 4. Repository structure
 
 ```
