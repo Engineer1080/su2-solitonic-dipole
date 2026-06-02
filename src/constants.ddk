@@ -1,0 +1,23 @@
+// modules/constants.ddk — units, constants, grid parameters.
+// Natural units: lengths in fm, energies in MeV.
+
+PI    = 3.141592653589793
+HBARC = 197.3269804            // MeV*fm
+ALPHA_F = 1.0 / 137.035999084  // fine-structure constant (dimensionless)
+ALPHA_HBARC = ALPHA_F * HBARC  // MeV*fm  (~1.43996)
+R0    = 2.21320516             // fm  => E0 = (ALPHA_HBARC/R0)*(pi/4) = 0.511 MeV
+ME_C2 = 0.510998950            // MeV  (electron rest energy)
+
+// Energy prefactor alpha_f * hbar c / (4 pi)  [MeV*fm]
+EPREF = ALPHA_HBARC / (4.0 * PI)
+
+// --- Lattice (3D Cartesian) ---
+A   = 0.7377                   // spacing in fm (~ R0/3)
+NX  = 24
+NY  = 24
+NZ  = 24
+NXf = NX + 0.0
+NYf = NY + 0.0
+NZf = NZ + 0.0
+NPTS  = NX * NY * NZ
+NPTS4 = 4 * NPTS

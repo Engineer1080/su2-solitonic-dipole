@@ -1,0 +1,9 @@
+use constants
+
+// E0 = (alpha_f * hbar c / r0) * (pi/4) must equal the electron rest energy.
+e0 = (ALPHA_HBARC / R0) * (PI / 4.0)
+print("E0 =")
+print(e0)
+assert(e0 > 0.50)
+assert(e0 < 0.52)
+print("OK test_constants")
