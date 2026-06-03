@@ -9,6 +9,7 @@
 - **Commit:** `cf83029` (cf8302970a6c569dee3109c4c5cb60878dc4cf42)
 
 ## Toolchain
+- dedekind: 3.0.5
 - Python: 3.10.4
 - torch:  2.10.0+cpu
 - CUDA available: no
