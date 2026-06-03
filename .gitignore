@@ -3,3 +3,5 @@ __pycache__/
 *.png
 *.tex
 examples/
+output_cyl.txt
+output.txt
