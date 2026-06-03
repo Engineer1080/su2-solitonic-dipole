@@ -2,14 +2,15 @@
 
 - **Source file:** `exp_coulomb.ddk`
 - **SHA-256:** `e9c8dfeaaafd4febdc29308bb75ad2c30fa5214cd121897f4a6c1de1913384e7`
-- **Generated:** 2026-06-03 19:53:44 UTC
+- **Generated:** 2026-06-03 19:58:06 UTC
 
 ## Git
+- **Repository:** `https://github.com/Engineer1080/su2-solitonic-dipole.git`
 - **Branch:** `master`
-- **Commit:** `c842fef` (c842fef17fd053f5bebe66a9cbf8ac4b2ec51f46)
+- **Commit:** `cbbc903` (cbbc9032c84d1afe54822b5e7995ae933dc28885)
 
 ## Toolchain
-- Dedekind: 3.0.7
+- Dedekind: 3.0.8
 - Python:   3.10.4
 - OS:       Windows 10 (AMD64)
 - torch:    2.5.1+cu121
@@ -17,8 +18,17 @@
 - numpy:    2.2.6
 - scipy:    1.15.3
 
+## Hardware
+- CPU: AMD Ryzen 7 5800X3D 8-Core Processor
+- RAM: 31.9 GB
+- GPU: NVIDIA GeForce RTX 4080 SUPER
+
+## Data Provenance (Input Files)
+- (no input data files read via read_file/read_csv/read_json/read_dataframe)
+
 ## RNG seeds detected in source
 - (none detected -- runs are NOT reproducible)
+- **WARNING:** No RNG seed detected in source code. Run results may vary across execution.
 
 ## Methods (LaTeX, from AST)
 
@@ -57,4 +67,16 @@ alpha\_inv = \frac{\mathrm{unwrap}\left( \mathit{HBARC} \right)}{2.0 \cdot \math
 \mathrm{print}\left( \mathit{C\_opt} \right)
 \mathrm{print}\left( \text{Fitted alpha\_sol\^\{\}-1 =} \right)
 \mathrm{print}\left( \mathit{alpha\_inv} \right)
+```
+
+## Citation (BibTeX)
+
+```bibtex
+@software{dedekind_v308,
+  author = {Heinrich, Mario Michael},
+  title = {Dedekind Programming Language},
+  version = {3.0.8},
+  url = {https://github.com/Engineer1080/su2-solitonic-dipole.git},
+  year = {2026}
+}
 ```
