@@ -2,19 +2,20 @@
 
 - **Source file:** `exp_coulomb.ddk`
 - **SHA-256:** `e9c8dfeaaafd4febdc29308bb75ad2c30fa5214cd121897f4a6c1de1913384e7`
-- **Generated:** 2026-06-03 19:10:56 UTC
+- **Generated:** 2026-06-03 19:33:20 UTC
 
 ## Git
 - **Branch:** `master`
-- **Commit:** `cf83029` (cf8302970a6c569dee3109c4c5cb60878dc4cf42)
+- **Commit:** `07ce740` (07ce740350e8f6e13a6845be67ae7bce78db1e2a)
 
 ## Toolchain
-- dedekind: 3.0.5
-- Python: 3.10.4
-- torch:  2.10.0+cpu
+- Dedekind: 3.0.7
+- Python:   3.10.4
+- OS:       Windows 10 (AMD64)
+- torch:    2.10.0+cpu
 - CUDA available: no
-- numpy:  2.2.6
-- scipy:  1.15.3
+- numpy:    2.2.6
+- scipy:    1.15.3
 
 ## RNG seeds detected in source
 - (none detected -- runs are NOT reproducible)
