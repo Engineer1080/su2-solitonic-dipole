@@ -2,11 +2,11 @@
 
 - **Source file:** `exp_coulomb.ddk`
 - **SHA-256:** `e9c8dfeaaafd4febdc29308bb75ad2c30fa5214cd121897f4a6c1de1913384e7`
-- **Generated:** 2026-06-02 21:49:47 UTC
+- **Generated:** 2026-06-03 19:10:56 UTC
 
 ## Git
-- **Branch:** `feat/implement-mtf-dipole`
-- **Commit:** `918c1a8` (918c1a80b78f31ac2d204bc11781a3a516223415) (dirty: uncommitted changes present)
+- **Branch:** `master`
+- **Commit:** `cf83029` (cf8302970a6c569dee3109c4c5cb60878dc4cf42)
 
 ## Toolchain
 - Python: 3.10.4
