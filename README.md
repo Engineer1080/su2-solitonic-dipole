@@ -47,11 +47,10 @@ This is a **teaching-scope** reproduction, not the paper's high-precision result
   relaxation suffers the Skyrme/Derrick instability (the soliton unwinds / its core
   collapses sub-cell), and a stable, topology-protected minimization needs the paper's
   exact boundary conditions, domain size, and discretization — research-grade work.
-- We therefore recover `alpha` from the **single soliton's near-field Coulomb tail**
-  (a static, robust measurement). This reproduces the headline physics — Coulomb
-  behaviour and `alpha^-1` of order 137 — but **not** the precise value nor the running
-  of `alpha` (which require the full dynamical dipole). See
-  `docs/superpowers/specs/...-design.md` (Outcome section) for details.
+ - We therefore recover `alpha` from the **single soliton's near-field Coulomb tail**
+   (a static, robust measurement). This reproduces the headline physics — Coulomb
+   behaviour and `alpha^-1` of order 137 — but **not** the precise value nor the running
+   of `alpha` (which require the full dynamical dipole).
 
 ## Run
 
@@ -68,14 +67,31 @@ This is a **teaching-scope** reproduction, not the paper's high-precision result
     python -m dedekind.compiler src\test_field.ddk        # unit-norm hedgehog
     python -m dedekind.compiler src\test_energy.ddk       # grid energy ~ 0.46 MeV
     python -m dedekind.compiler src\test_coulomb.ddk      # alpha^-1 ~ O(137), flat plateau
+    python -m dedekind.compiler src\test_cylindrical.ddk  # 2D cylindrical coordinate energy check (~0.46 MeV)
+    python -m dedekind.compiler src\test_uncertain.ddk    # analytical Gaussian error propagation test
+
+## Benchmarks
+
+To evaluate the runtime performance of Dedekind compared to hand-written PyTorch on scientific grid calculations, we benchmarked the 2D cylindrical coordinate solver across different grid sizes. Dedekind compiles directly to vectorized PyTorch operations, leading to a performance ratio of **1.00x** (zero runtime overhead):
+
+* **Standard Grid** ($129 \times 257$ - 33k cells): PyTorch `5.88 ms` vs. Dedekind `5.71 ms` (**0.97x**)
+* **Large Grid** ($257 \times 513$ - 131k cells): PyTorch `6.68 ms` vs. Dedekind `6.69 ms` (**1.00x**)
+* **Huge Grid** ($513 \times 1025$ - 525k cells): PyTorch `10.54 ms` vs. Dedekind `9.88 ms` (**0.94x**)
+
+Run the benchmarks with:
+
+    python experiments\benchmark.py             # 3D Cartesian benchmark
+    python experiments\benchmark_cylindrical.py # 2D Cylindrical benchmark suite
 
 ## Files
 
-    src/constants.ddk     units, constants, 3D grid (65^3, a=0.5 fm)
-    src/field.ddk         hedgehog soliton, centered soliton, radius field
-    src/energy.ddk        Gamma_i from FD of Q, R_ij, energy density + total energy
-    src/coulomb.ddk       E_out(R), Coulomb coefficient, alpha_sol^-1
-    src/exp_soliton1d.ddk closed-form E0 anchor
-    src/exp_coulomb.ddk   alpha from the near-field Coulomb tail
-    src/test_*.ddk        numerical tolerance checks
-    docs/superpowers/     design spec (with Outcome section) and implementation plan
+    src/constants.ddk        units, constants, 3D grid (65^3, a=0.5 fm)
+    src/field.ddk            hedgehog soliton, centered soliton, radius field
+    src/energy.ddk           Gamma_i from FD of Q, R_ij, energy density + total energy
+    src/coulomb.ddk          E_out(R), Coulomb coefficient, alpha_sol^-1
+    src/exp_soliton1d.ddk    closed-form E0 anchor
+    src/exp_coulomb.ddk      alpha from the near-field Coulomb tail
+    src/test_cylindrical.ddk 2D cylindrical coordinate solver
+    src/test_uncertain.ddk   compile-time error propagation test
+    src/test_*.ddk           numerical tolerance checks
+    experiments/             performance benchmark scripts (Cartesian and Cylindrical)
